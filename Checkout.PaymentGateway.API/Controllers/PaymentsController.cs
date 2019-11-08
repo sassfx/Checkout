@@ -1,11 +1,12 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Threading.Tasks;
 
 namespace Checkout.PaymentGateway.API.Controllers
 {
     [ApiController]
-    [Route("payments")]
+    [Route("payment")]
     public class PaymentsController
     {
         private readonly IMediator mediator;
@@ -17,9 +18,17 @@ namespace Checkout.PaymentGateway.API.Controllers
 
         [HttpGet]
         [Route("{paymentId}")]
-        public async Task<PaymentDetails> PaymentDetails(string paymentId)
+        public async Task<GetPaymentResponse> GetPaymentDetails([FromRoute]Guid paymentId)
         {
-            var result = await mediator.Send(new PaymentRequest { PaymentId = paymentId });
+            var result = await mediator.Send(new GetPaymentRequest { PaymentId = paymentId });
+            return result;
+        }
+
+        [HttpPost]
+        [Route("")]
+        public async Task<MakePaymentCommandResponse> MakePayment([FromBody]MakePaymentCommand makePaymentCommand)
+        {
+            var result = await mediator.Send(makePaymentCommand);
             return result;
         }
     }

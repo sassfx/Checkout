@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Checkout.PaymentGateway.API.Controllers;
+using Checkout.PaymentGateway.API.Services;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -27,8 +29,12 @@ namespace Checkout.PaymentGateway.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // Using Mediatr to set up my command/query pipeline
             services.AddControllers();
-            services.AddTransient<IRequestHandler<PaymentRequest, PaymentDetails>, PaymentRequestHandler>();
+            services.AddTransient<IRequestHandler<MakePaymentCommand, MakePaymentCommandResponse>, MakePaymentCommandHandler>();
+            services.AddTransient<IRequestHandler<GetPaymentRequest, GetPaymentResponse>, GetPaymentRequestHandler>();
+            services.AddSingleton<IBank, BankMockImplementation>();
+            services.AddSingleton<IPaymentCache, PaymentCache>();
             services.AddMediatR(Assembly.GetExecutingAssembly());
         }
 
